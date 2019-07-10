@@ -16,6 +16,9 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 // Rutas
+app.get('/', function(req, res) {
+  res.send('Microservicio de Usuarios');
+});
 app.use('/clientes', clienteRoutes);
 app.use('/administradores', administradorRoutes);
 app.use('/repartidores', repartidorRoutes);
