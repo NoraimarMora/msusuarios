@@ -9,8 +9,8 @@ var controller = {
         var parameters = request.body
         var cliente = new Cliente();
 
-        cliente.firstName = parameters.firstName;
-        cliente.lastName = parameters.lastName;
+        cliente.first_name = parameters.first_name;
+        cliente.last_name = parameters.last_name;
         cliente.password = sha1(parameters.password);
         cliente.email = parameters.email;
         cliente.phone = parameters.phone;
@@ -32,7 +32,7 @@ var controller = {
         var email = parameters.email;
         var password = sha1(parameters.password);
 
-        Cliente.findOne({email}).exec((error, cliente) => {
+        Cliente.findOne({email}).populate('addresses').exec((error, cliente) => {
 
             if (error) {
                 return response.status(500).send({
@@ -42,8 +42,9 @@ var controller = {
             }
 
             if (!cliente) {
-                return response.status(200).send({
-                    status: false, 
+                return response.status(404).send({
+                    status: false,
+                    message: 'No se ha encontrado documento'
                 });
             }
 
@@ -51,11 +52,13 @@ var controller = {
                 
                 return response.status(200).send({
                     status: true,
+                    cliente: cliente
                 });
                 
             } else {
-                return response.status(200).send({
+                return response.status(404).send({
                     status: false,
+                    message: 'Contraseña invalida'
                 });
             }   
         });
@@ -65,7 +68,7 @@ var controller = {
         var parameters = request.body;
 
         Cliente.findOne({email: parameters.email})
-        .exec((error, user) => {
+            .populate('addresses').exec((error, cliente) => {
 
             if (error) {
                 return response.status(500).send({
@@ -76,8 +79,8 @@ var controller = {
 
             if (!cliente) {
                 var cliente = new Cliente();
-                cliente.firstName = parameters.firstName;
-                cliente.lastName = parameters.lastName;
+                cliente.first_name = parameters.first_name;
+                cliente.last_name = parameters.last_name;
                 cliente.email = parameters.email;
                 cliente.password = sha1(parameters.id);
                 cliente.facebook = true;
@@ -93,6 +96,7 @@ var controller = {
 
                     return response.status(200).send({
                         status: true,
+                        cliente: clienteStored
                     });
                 });
 
@@ -100,6 +104,7 @@ var controller = {
 
                 return response.status(200).send({
                     status: true, 
+                    cliente: cliente
                 });
             }
         });
@@ -107,7 +112,8 @@ var controller = {
 
     getClienteByEmail: function (request, response) {
         var email = request.params.email;
-        Cliente.findOne({ email: email }).exec((error, cliente) => {
+
+        Cliente.findOne({ email: email }).populate('addresses').exec((error, cliente) => {
             if (error) {
                 return response.status(500).send({
                     status: false, 
@@ -117,6 +123,7 @@ var controller = {
             if (!cliente) {
                 return response.status(404).send({
                     status: false, 
+                    message: 'Not found'
                 });
             }
 
@@ -128,7 +135,7 @@ var controller = {
     },
 
     getCliente: function(request, response) {
-        var clienteId = request.body.id;
+        var clienteId = request.params.id;
 
         if (clienteId == null) {
             return response.status(404).send({
@@ -136,7 +143,7 @@ var controller = {
             });
         }
 
-        Cliente.findById(clienteId, (error, cliente) => {
+        Cliente.findById(clienteId).populate('addresses').exec(function (error, cliente) {
             if (error) {
                 return response.status(500).send({
                     status: false, 
@@ -146,6 +153,7 @@ var controller = {
             if (!cliente) {
                 return response.status(404).send({
                     status: false, 
+                    message: 'Not found'
                 });
             }
 
@@ -157,7 +165,7 @@ var controller = {
     },
 
     getClientes: function (request, response) {
-        Cliente.find({}).sort('-name').exec((error, clientes) => {
+        Cliente.find({}).populate('addresses').exec((error, clientes) => {
             if (error) {
                 return response.status(500).send({
                     status: false, 
@@ -167,6 +175,7 @@ var controller = {
             if (!clientes) {
                 return response.status(404).send({
                     status: false, 
+                    message: 'Not found'
                 });
             }
 
@@ -178,13 +187,15 @@ var controller = {
     },
 
     updateCliente: function (request, response) {
-        var clienteId = request.body.id;
+        var clienteId = request.params.id;
         var update = {};
         var parameters = request.body
 
-        update.firstName = parameters.firstName;
-        update.lastName = parameters.lastName;
+        update.first_name = parameters.first_name;
+        update.last_name = parameters.last_name;
         update.email = parameters.email;
+        update.phone = parameters.phone;
+        update.addresses = parameters.addresses;
 
         Cliente.findByIdAndUpdate(clienteId, update, {new: true}, (error, clienteUpdated) => {
 
@@ -198,6 +209,7 @@ var controller = {
             if (!clienteUpdated) {
                 return response.status(404).send({
                     status: false, 
+                    message: 'Not found'
                 });
             }
 
@@ -209,7 +221,7 @@ var controller = {
     },
 
     deleteCliente: function (request, response) {
-        var clienteId = request.body.id;
+        var clienteId = request.params.id;
 
         Cliente.findByIdAndRemove(clienteId, (error, clienteRemoved) => {
             if (error) {
@@ -221,6 +233,7 @@ var controller = {
             if (!clienteRemoved) {
                 return response.status(404).send({
                     status: false, 
+                    message: 'Not found'
                 });
             }
 

@@ -4,15 +4,16 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var ClienteSchema = Schema({
-    firstName: {type: String, required: true},
-    lastName: {type: String, required: true},
+    first_name: {type: String, required: true},
+    last_name: {type: String, required: true},
     password: {type: String, required: true},
     email: {type: String, required: true},
-    profileImage: {type: String, allowNull: true},
+    profile_image: {type: String, allowNull: true},
     facebook: {type: Boolean, default: false},      // true: register with facebook, false: register with email
     phone: {type: String, default: ''},
+    addresses: [{type: Schema.Types.ObjectId, ref: 'Direccion'}],
     active: {type: Boolean, default: true},
-    dateCreated: {type: Date, default: Date.now}
+    date_created: {type: Date, default: Date.now}
 });
 
 module.exports = mongoose.model('Cliente', ClienteSchema);

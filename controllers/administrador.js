@@ -9,11 +9,12 @@ var controller = {
         var parameters = request.body
         var administrador = new Administrador();
 
-        administrador.firstName = parameters.firstName;
-        administrador.lastName = parameters.lastName;
+        administrador.first_name = parameters.first_name;
+        administrador.last_name = parameters.last_name;
         administrador.password = sha1(parameters.password);
         administrador.email = parameters.email;
         administrador.phone = parameters.phone;
+        administrador.role = parameters.role;
         administrador.active = parameters.active;
 
         administrador.save((error, administradorStored) => {
@@ -42,27 +43,31 @@ var controller = {
             }
 
             if (!administrador) {
-                return response.status(200).send({
+                return response.status(404).send({
                     status: false, 
+                    message: 'Not found'
                 });
             }
 
             if (password == administrador.password) {
                 
                 return response.status(200).send({
-                    status: true
+                    status: true,
+                    administrador: administrador
                 });
                 
             } else {
-                return response.status(200).send({
+                return response.status(404).send({
                     status: false,
+                    message: 'Contraseña invalida'
                 });
-            }   
+            }
         });
     },
 
     getAdministradorByEmail: function (request, response) {
         var email = request.params.email;
+
         Administrador.findOne({ email: email }).exec((error, administrador) => {
             if (error) {
                 return response.status(500).send({
@@ -84,7 +89,7 @@ var controller = {
     },
 
     getAdministrador: function(request, response) {
-        var administradorId = request.body.id;
+        var administradorId = request.params.id;
 
         if (administradorId == null) {
             return response.status(404).send({
@@ -113,7 +118,7 @@ var controller = {
     },
 
     getAdministradores: function (request, response) {
-        Administrador.find({}).sort('-name').exec((error, administradores) => {
+        Administrador.find({}).exec((error, administradores) => {
             if (error) {
                 return response.status(500).send({
                     status: false, 
@@ -134,13 +139,14 @@ var controller = {
     },
 
     updateAdministrador: function (request, response) {
-        var administradorId = request.body.id;
+        var administradorId = request.params.id;
         var update = {};
         var parameters = request.body
 
-        update.firstName = parameters.firstName;
-        update.lastName = parameters.lastName;
+        update.first_name = parameters.first_name;
+        update.last_name = parameters.last_name;
         update.email = parameters.email;
+        update.phone = parameters.phone;
 
         Administrador.findByIdAndUpdate(administradorId, update, {new: true}, (error, administradorUpdated) => {
 
@@ -165,7 +171,7 @@ var controller = {
     },
 
     deleteAdministrador: function (request, response) {
-        var administradorId = request.body.id;
+        var administradorId = request.params.id;
 
         Administrador.findByIdAndRemove(administradorId, (error, administradorRemoved) => {
             if (error) {

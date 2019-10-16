@@ -9,8 +9,8 @@ var controller = {
         var parameters = request.body
         var repartidor = new Repartidor();
 
-        repartidor.firstName = parameters.firstName;
-        repartidor.lastName = parameters.lastName;
+        repartidor.first_name = parameters.first_name;
+        repartidor.last_name = parameters.last_name;
         repartidor.password = sha1(parameters.password);
         repartidor.email = parameters.email;
         repartidor.phone = parameters.phone;
@@ -32,7 +32,8 @@ var controller = {
         var email = parameters.email;
         var password = sha1(parameters.password);
 
-        Repartidor.findOne({email}).exec((error, repartidor) => {
+        Repartidor.findOne({email})
+            .populate('accounts').exec((error, repartidor) => {
 
             if (error) {
                 return response.status(500).send({
@@ -42,8 +43,9 @@ var controller = {
             }
 
             if (!repartidor) {
-                return response.status(200).send({
+                return response.status(404).send({
                     status: false, 
+                    message: 'Not found'
                 });
             }
 
@@ -51,11 +53,13 @@ var controller = {
                 
                 return response.status(200).send({
                     status: true,
+                    repartidor: repartidor
                 });
                 
             } else {
-                return response.status(200).send({
+                return response.status(404).send({
                     status: false,
+                    message: 'Contraseña invalida'                    
                 });
             }   
         });
@@ -63,7 +67,9 @@ var controller = {
 
     getRepartidorByEmail: function (request, response) {
         var email = request.params.email;
-        Repartidor.findOne({ email: email }).exec((error, repartidor) => {
+
+        Repartidor.findOne({ email: email })
+            .populate('accounts').exec((error, repartidor) => {
             if (error) {
                 return response.status(500).send({
                     status: false, 
@@ -84,7 +90,7 @@ var controller = {
     },
 
     getRepartidor: function(request, response) {
-        var repartidorId = request.body.id;
+        var repartidorId = request.params.id;
 
         if (repartidorId == null) {
             return response.status(404).send({
@@ -92,7 +98,8 @@ var controller = {
             });
         }
 
-        Repartidor.findById(repartidorId, (error, repartidor) => {
+        Repartidor.findById(repartidorId)
+            .populate('accounts').exec(function (error, repartidor) {
             if (error) {
                 return response.status(500).send({
                     status: false, 
@@ -113,7 +120,7 @@ var controller = {
     },
 
     getRepartidores: function (request, response) {
-        Repartidor.find({}).sort('-name').exec((error, repartidores) => {
+        Repartidor.find({}).populate('accounts').exec((error, repartidores) => {
             if (error) {
                 return response.status(500).send({
                     status: false, 
@@ -134,13 +141,15 @@ var controller = {
     },
 
     updateRepartidor: function (request, response) {
-        var repartidorId = request.body.id;
+        var repartidorId = request.params.id;
         var update = {};
         var parameters = request.body
 
-        update.firstName = parameters.firstName;
-        update.lastName = parameters.lastName;
+        update.first_name = parameters.first_name;
+        update.last_name = parameters.last_name;
         update.email = parameters.email;
+        update.accounts = parameters.accounts;
+        update.phone = parameters.phone;
 
         Repartidor.findByIdAndUpdate(repartidorId, update, {new: true}, (error, repartidorUpdated) => {
 
@@ -165,7 +174,7 @@ var controller = {
     },
 
     deleteRepartidor: function (request, response) {
-        var repartidorId = request.body.id;
+        var repartidorId = request.params.id;
 
         Repartidor.findByIdAndRemove(repartidorId, (error, repartidorRemoved) => {
             if (error) {
