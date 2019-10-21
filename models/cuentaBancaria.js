@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var CuentaBancariaSchema = Schema({
-    delivery_man_id: {type: Schema.Types.ObjectId, ref: 'Repartidor', required: true},
+    delivery_man: {type: Schema.Types.ObjectId, ref: 'Repartidor', required: true},
     dni: {type: String, required: true},
     dni_type: {type: String, required: true},
     account_number: {type: String, required: true},

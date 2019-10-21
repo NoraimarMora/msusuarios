@@ -9,5 +9,9 @@ module.exports = {
     
     DB_HOST: process.env.DB_HOST,
     
-    DB_PORT: process.env.DB_PORT
+    DB_PORT: process.env.DB_PORT,
+
+    MB_HOST: process.env.MB_HOST,
+    
+    MB_PORT: process.env.MB_PORT
 };

@@ -8,7 +8,7 @@ var controller = {
         var parameters = request.body
         var direccion = new Direccion();
 
-        direccion.client_id = parameters.client_id;
+        direccion.client = parameters.client;
         direccion.name = parameters.name;
         direccion.latitude = parameters.latitude;
         direccion.longitude = parameters.longitude;
@@ -16,14 +16,31 @@ var controller = {
 
         direccion.save((error, direccionStored) => {
             if (error) {
-                return response.status(500).send({error});
+                return response.status(500).send({
+                    status: 500,
+                    error
+                });
             } 
             if (!direccionStored) {
-                return response.status(404).send({message: 'No se ha podido guardar el documento'});
+                return response.status(404).send({
+                    status: 404,
+                    message: 'No se ha podido guardar el documento'
+                });
             }
 
+            var address = {
+                id: direccionStored._id,
+                client: direccionStored.client,
+                name: direccionStored.name,
+                latitude: direccionStored.latitude,
+                longitude: direccionStored.longitude,
+                description: direccionStored.description
+            }
             
-            return response.status(200).send({direccion: direccionStored});
+            return response.status(200).send({
+                status: 200,
+                address: address
+            });
         });
     },
 
@@ -32,28 +49,37 @@ var controller = {
 
         if (direccionId == null) {
             return response.status(404).send({
-                status: false, 
+                status: 404, 
+                message: 'Not found'
             });
         }
 
-        Direccion.findById(direccionId)
-            .populate('cliente_id')
-            .exec(function (error, direccion) {
+        Direccion.findById(direccionId).exec(function (error, direccion) {
             if (error) {
                 return response.status(500).send({
-                    status: false, 
+                    status: 500, 
                     error
                 });
             }
             if (!direccion) {
                 return response.status(404).send({
-                    status: false, 
+                    status: 404, 
+                    message: 'Not found'
                 });
             }
 
+            var address = {
+                id: direccion._id,
+                client: direccion.client,
+                name: direccion.name,
+                latitude: direccion.latitude,
+                longitude: direccion.longitude,
+                description: direccion.description
+            }
+
             return response.status(200).send({
-                status: true,
-                direccion: direccion
+                status: 200,
+                address: address
             });
         });
     },
@@ -63,34 +89,46 @@ var controller = {
 
         if (cleinteId == null) {
             return response.status(404).send({
-                status: false, 
+                status: 404, 
+                message: 'Not found'
             });
         }
 
-        CuentaBancaria.findOne({client_id: cleinteId})
-            .populate('client_id')
-            .exec(function (error, direcciones) {
+        Direccion.findOne({client: cleinteId}).exec(function (error, direcciones) {
             if (error) {
                 return response.status(500).send({
-                    status: false, 
+                    status: 500, 
                     error
                 });
             }
             if (!direcciones) {
                 return response.status(404).send({
-                    status: false, 
+                    status: 404, 
                 });
             }
 
+            var addresses = []
+
+            direcciones.map((direccion) => {
+                addresses.push({
+                    id: direccion._id,
+                    client: direccion.client,
+                    name: direccion.name,
+                    latitude: direccion.latitude,
+                    longitude: direccion.longitude,
+                    description: direccion.description
+                })
+            })
+
             return response.status(200).send({
-                status: true,
-                direcciones: direcciones
+                status: 200,
+                addresses: addresses
             });
         });
     },
 
     getDirecciones: function (request, response) {
-        Direccion.find({}).populate('client_id').exec((error, direcciones) => {
+        Direccion.find({}).populate('client').exec((error, direcciones) => {
             if (error) {
                 return response.status(500).send({
                     status: false, 
@@ -103,9 +141,22 @@ var controller = {
                 });
             }
 
+            var addresses = []
+
+            direcciones.map((direccion) => {
+                addresses.push({
+                    id: direccion._id,
+                    client: direccion.client,
+                    name: direccion.name,
+                    latitude: direccion.latitude,
+                    longitude: direccion.longitude,
+                    description: direccion.description
+                })
+            })
+
             return response.status(200).send({
                 status:true, 
-                direcciones: direcciones
+                addresses: addresses
             });
         });
     },
@@ -124,20 +175,30 @@ var controller = {
 
             if (error) {
                 return response.status(500).send({
-                    status: false, 
+                    status: 500, 
                     error
                 });
             }
 
             if (!direccionUpdated) {
                 return response.status(404).send({
-                    status: false, 
+                    status: 404, 
+                    message: 'Not found'
                 });
             }
 
+            var address = {
+                id: direccionUpdated._id,
+                client: direccionUpdated.client,
+                name: direccionUpdated.name,
+                latitude: direccionUpdated.latitude,
+                longitude: direccionUpdated.longitude,
+                description: direccionUpdated.description
+            }
+
             return response.status(200).send({
-                status: true, 
-                direccion: direccionUpdated
+                status: 200, 
+                address: address
             });
         });
     },
@@ -148,19 +209,29 @@ var controller = {
         Direccion.findByIdAndRemove(direccionId, (error, direccionRemoved) => {
             if (error) {
                 return response.status(500).send({
-                    status: false, 
+                    status: 500, 
                     error
                 });
             }
             if (!direccionRemoved) {
                 return response.status(404).send({
-                    status: false, 
+                    status: 404, 
+                    message: 'Not found'
                 });
             }
 
+            var address = {
+                id: direccionRemoved._id,
+                client: direccionRemoved.client,
+                name: direccionRemoved.name,
+                latitude: direccionRemoved.latitude,
+                longitude: direccionRemoved.longitude,
+                description: direccionRemoved.description
+            }
+
             return response.status(200).send({
-                status: true, 
-                direccion: direccionRemoved
+                status: 200, 
+                address: address
             });
         });
     } 

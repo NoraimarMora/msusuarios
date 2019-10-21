@@ -19,12 +19,34 @@ var controller = {
 
         administrador.save((error, administradorStored) => {
             if (error) {
-                return response.status(500).send({error});
+                return response.status(500).send({
+                    status: 500,
+                    error
+                });
             } 
             if (!administradorStored) {
-                return response.status(404).send({message: 'No se ha podido guardar el documento'});
+                return response.status(404).send({
+                    status: 404,
+                    message: 'No se ha podido guardar el documento'
+                });
             }
-            return response.status(200).send({administrador: administradorStored});
+
+            var administrator = {
+                id: administradorStored._id,
+                role: administradorStored.role,
+                phone: administradorStored.phone,
+                active: administradorStored.active,
+                date_created: administradorStored.date_created,
+                first_name: administradorStored.first_name,
+                last_name: administradorStored.last_name,
+                email: administradorStored.email,
+                password: administradorStored.password
+            }
+
+            return response.status(200).send({
+                status: 200,
+                administrator: administrator
+            });
         });
     },
 
@@ -37,28 +59,40 @@ var controller = {
 
             if (error) {
                 return response.status(500).send({
-                    status: false,
+                    status: 500,
                     error
                 });
             }
 
             if (!administrador) {
                 return response.status(404).send({
-                    status: false, 
+                    status: 404, 
                     message: 'Not found'
                 });
             }
 
             if (password == administrador.password) {
                 
+                var administrator = {
+                    id: administrador._id,
+                    role: administrador.role,
+                    phone: administrador.phone,
+                    active: administrador.active,
+                    date_created: administrador.date_created,
+                    first_name: administrador.first_name,
+                    last_name: administrador.last_name,
+                    email: administrador.email,
+                    password: administrador.password
+                }
+
                 return response.status(200).send({
-                    status: true,
-                    administrador: administrador
+                    status: 200,
+                    administrator: administrator
                 });
                 
             } else {
                 return response.status(404).send({
-                    status: false,
+                    status: 404,
                     message: 'Contraseña invalida'
                 });
             }
@@ -71,19 +105,32 @@ var controller = {
         Administrador.findOne({ email: email }).exec((error, administrador) => {
             if (error) {
                 return response.status(500).send({
-                    status: false, 
+                    status: 500, 
                     error
                 });
             }
             if (!administrador) {
                 return response.status(404).send({
-                    status: false, 
+                    status: 404, 
+                    message: 'Not found'
                 });
             }
 
+            var administrator = {
+                id: administrador._id,
+                role: administrador.role,
+                phone: administrador.phone,
+                active: administrador.active,
+                date_created: administrador.date_created,
+                first_name: administrador.first_name,
+                last_name: administrador.last_name,
+                email: administrador.email,
+                password: administrador.password
+            }
+
             return response.status(200).send({
-                status: true,
-                administrador: administrador
+                status: 200,
+                administrator: administrator
             });
         });
     },
@@ -93,47 +140,78 @@ var controller = {
 
         if (administradorId == null) {
             return response.status(404).send({
-                status: false, 
+                status: 404, 
+                message: 'Not found'
             });
         }
 
         Administrador.findById(administradorId, (error, administrador) => {
             if (error) {
                 return response.status(500).send({
-                    status: false, 
+                    status: 500, 
                     error
                 });
             }
             if (!administrador) {
                 return response.status(404).send({
-                    status: false, 
+                    status: 404, 
+                    message: 'Not found'
                 });
             }
 
+            var administrator = {
+                id: administrador._id,
+                role: administrador.role,
+                phone: administrador.phone,
+                active: administrador.active,
+                date_created: administrador.date_created,
+                first_name: administrador.first_name,
+                last_name: administrador.last_name,
+                email: administrador.email,
+                password: administrador.password
+            }
+
             return response.status(200).send({
-                status: true,
-                administrador: administrador
+                status: 200,
+                administrator: administrator
             });
         });
     },
 
     getAdministradores: function (request, response) {
+        var administrators = []
+        
         Administrador.find({}).exec((error, administradores) => {
             if (error) {
                 return response.status(500).send({
-                    status: false, 
+                    status: 500, 
                     error
                 });
             }
             if (!administradores) {
                 return response.status(404).send({
-                    status: false, 
+                    status: 404, 
+                    message: 'Not found'
                 });
             }
 
+            administradores.map((administrador) => {
+                administrators.push({
+                    id: administrador._id,
+                    role: administrador.role,
+                    phone: administrador.phone,
+                    active: administrador.active,
+                    date_created: administrador.date_created,
+                    first_name: administrador.first_name,
+                    last_name: administrador.last_name,
+                    email: administrador.email,
+                    password: administrador.password
+                })
+            })
+
             return response.status(200).send({
-                status:true, 
-                administradores: administradores
+                status:200, 
+                administrators: administrators
             });
         });
     },
@@ -152,20 +230,33 @@ var controller = {
 
             if (error) {
                 return response.status(500).send({
-                    status: false, 
+                    status: 500, 
                     error
                 });
             }
 
             if (!administradorUpdated) {
                 return response.status(404).send({
-                    status: false, 
+                    status: 404, 
+                    message: 'Not found'
                 });
+            }
+
+            var administrator = {
+                id: administradorUpdated._id,
+                role: administradorUpdated.role,
+                phone: administradorUpdated.phone,
+                active: administradorUpdated.active,
+                date_created: administradorUpdated.date_created,
+                first_name: administradorUpdated.first_name,
+                last_name: administradorUpdated.last_name,
+                email: administradorUpdated.email,
+                password: administradorUpdated.password
             }
 
             return response.status(200).send({
                 status: true, 
-                administrador: administradorUpdated
+                administrator: administrator
             });
         });
     },
@@ -176,7 +267,7 @@ var controller = {
         Administrador.findByIdAndRemove(administradorId, (error, administradorRemoved) => {
             if (error) {
                 return response.status(500).send({
-                    status: false, 
+                    status: 500, 
                     error
                 });
             }
@@ -186,9 +277,21 @@ var controller = {
                 });
             }
 
+            var administrator = {
+                id: administradorRemoved._id,
+                role: administradorRemoved.role,
+                phone: administradorRemoved.phone,
+                active: administradorRemoved.active,
+                date_created: administradorRemoved.date_created,
+                first_name: administradorRemoved.first_name,
+                last_name: administradorRemoved.last_name,
+                email: administradorRemoved.email,
+                password: administradorRemoved.password
+            }
+
             return response.status(200).send({
                 status: true, 
-                administrador: administradorRemoved
+                administrator: administrator
             });
         });
     } 
