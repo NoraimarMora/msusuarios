@@ -4,7 +4,7 @@ const { MB_URL } = require('../config');
 
 let brokerConnection = null;
 
-const initBroker = () => new Promise(async (resolve, reject) => {
+const initBroker = (url) => new Promise(async (resolve, reject) => {
   try {
     const connection = await amqplib.connect(url);
     resolve(connection);
@@ -16,14 +16,19 @@ const initBroker = () => new Promise(async (resolve, reject) => {
 
 const notify = async (queue, obj) => {
   if (!brokerConnection) {
-    brokerConnection = await initBroker(MB_URL);
+    try {
+      brokerConnection = await initBroker(MB_URL);
+    } catch (error) {
+      console.error('Failed to connect to broker');
+      return;
+    }
   }
 
   await brokerConnection.createChannel()
     .then(ch => ch.assertQueue(queue)
       .then(() => {
         ch.sendToQueue(queue, Buffer.from(JSON.stringify(obj)));
-        console.log(`[PUBLISHER] - Sent ${JSON.stringify(ob)}`);
+        console.log(`[PUBLISHER] - Sent ${JSON.stringify(obj)}`);
       })
     ).catch(console.warning);
 }
