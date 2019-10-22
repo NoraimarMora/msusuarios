@@ -1,7 +1,8 @@
 'use strict'
 
-var Repartidor = require('../models/repartidor');
 var sha1 = require('sha1');
+var Repartidor = require('../models/repartidor');
+var { notify } = require('../broker');
 
 var controller = {
 
@@ -23,7 +24,8 @@ var controller = {
                     status: 500,
                     error
                 });
-            } 
+            }
+
             if (!repartidorStored) {
                 return response.status(404).send({
                     status: 404,
@@ -42,6 +44,8 @@ var controller = {
                 email: repartidorStored.email,
                 password: repartidorStored.password
             }
+
+            notify('courier-created', { courier: repartidorStored });
 
             return response.status(200).send({
                 status: 200,
@@ -315,6 +319,8 @@ var controller = {
                 password: repartidorUpdated.password
             }
 
+            notify('courier-updated', { courier: repartidorUpdated });
+
             return response.status(200).send({
                 status: 200, 
                 delivery_man: delivery_man
@@ -349,6 +355,8 @@ var controller = {
                 email: repartidorRemoved.email,
                 password: repartidorRemoved.password
             }
+
+            notify('courier-deleted', { courier: repartidorRemoved });
 
             return response.status(200).send({
                 status: 200, 

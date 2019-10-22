@@ -27,18 +27,6 @@ const notify = async (queue, obj) => {
       })
     ).catch(console.warning);
 }
-const notifyClientUpdated = async () => {
-
-};
-const notifyClientDeleted = async () => { };
-
-const notifyAddressCreated = async () => { };
-const notifyAddressUpdated = async () => { };
-const notifyAddressDeleted = async () => { };
-
-const notifyCourierCreated = async () => { };
-const notifyCourierUpdated = async () => { };
-const notifyCourierDeleted = async () => { };
 
 module.exports = {
   notify
