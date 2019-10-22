@@ -190,6 +190,8 @@ var controller = {
                 });
             }
 
+            notify('address-updated', { address: direccionUpdated });
+
             return response.status(200).send({
                 status: 200, 
                 address: address
@@ -207,12 +209,15 @@ var controller = {
                     error
                 });
             }
+
             if (!direccionRemoved) {
                 return response.status(404).send({
                     status: 404, 
                     message: 'Not found'
                 });
             }
+
+            notify('address-deleted', { address: direccionRemoved });
 
             return response.status(200).send({
                 status: 200, 
