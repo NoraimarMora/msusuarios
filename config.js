@@ -11,7 +11,5 @@ module.exports = {
     
     DB_PORT: process.env.DB_PORT,
 
-    MB_HOST: process.env.MB_HOST,
-    
-    MB_PORT: process.env.MB_PORT
+    MB_URL: process.env.MB_URL,
 };

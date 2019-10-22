@@ -2,6 +2,7 @@
 
 var Cliente = require('../models/cliente');
 var sha1 = require('sha1');
+var { notify } = require('../broker');
 
 var controller = {
 
@@ -43,6 +44,8 @@ var controller = {
                 email: clienteStored.email,
                 password: clienteStored.password
             }
+
+            notify('client-created', { client: clienteStored });
 
             return response.status(200).send({
                 status: 200,
@@ -384,18 +387,7 @@ var controller = {
                 });
             }
 
-            var cliente = {
-                id: clienteUpdated._id,
-                facebook: clienteUpdated.facebook,
-                phone: clienteUpdated.phone,
-                addresses: clienteUpdated.addresses,
-                active: clienteUpdated.active,
-                date_created: clienteUpdated.date_created,
-                first_name: clienteUpdated.first_name,
-                last_name: clienteUpdated.last_name,
-                email: clienteUpdated.email,
-                password: clienteUpdated.password
-            }
+            notify('client-updated', { client: clienteUpdated });
 
             return response.status(200).send({
                 status: true, 
@@ -414,6 +406,7 @@ var controller = {
                     error
                 });
             }
+
             if (!clienteRemoved) {
                 return response.status(404).send({
                     status: false, 
@@ -421,18 +414,7 @@ var controller = {
                 });
             }
 
-            var cliente = {
-                id: clienteRemoved._id,
-                facebook: clienteRemoved.facebook,
-                phone: clienteRemoved.phone,
-                addresses: clienteRemoved.addresses,
-                active: clienteRemoved.active,
-                date_created: clienteRemoved.date_created,
-                first_name: clienteRemoved.first_name,
-                last_name: clienteRemoved.last_name,
-                email: clienteRemoved.email,
-                password: clienteRemoved.password
-            }
+            notify('client-deleted', { client: clienteRemoved });
 
             return response.status(200).send({
                 status: true, 

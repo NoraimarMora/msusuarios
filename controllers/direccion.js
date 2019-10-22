@@ -1,6 +1,7 @@
 'use strict'
 
 var Direccion = require('../models/direccion');
+var { notify } = require('../broker');
 
 var controller = {
 
@@ -36,7 +37,9 @@ var controller = {
                 longitude: direccionStored.longitude,
                 description: direccionStored.description
             }
-            
+
+            notify('address-created', { address: direccionStored });
+
             return response.status(200).send({
                 status: 200,
                 address: address
@@ -187,15 +190,6 @@ var controller = {
                 });
             }
 
-            var address = {
-                id: direccionUpdated._id,
-                client: direccionUpdated.client,
-                name: direccionUpdated.name,
-                latitude: direccionUpdated.latitude,
-                longitude: direccionUpdated.longitude,
-                description: direccionUpdated.description
-            }
-
             return response.status(200).send({
                 status: 200, 
                 address: address
@@ -218,15 +212,6 @@ var controller = {
                     status: 404, 
                     message: 'Not found'
                 });
-            }
-
-            var address = {
-                id: direccionRemoved._id,
-                client: direccionRemoved.client,
-                name: direccionRemoved.name,
-                latitude: direccionRemoved.latitude,
-                longitude: direccionRemoved.longitude,
-                description: direccionRemoved.description
             }
 
             return response.status(200).send({
