@@ -97,7 +97,7 @@ var controller = {
             });
         }
 
-        Direccion.findOne({client: cleinteId}).exec(function (error, direcciones) {
+        Direccion.find({client: cleinteId}).exec(function (error, direcciones) {
             if (error) {
                 return response.status(500).send({
                     status: 500, 
